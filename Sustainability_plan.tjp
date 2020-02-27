@@ -3,7 +3,7 @@
  * taskJuggler project management tool. You can use this as a basis to
  * start you own project file.
  */
-project your_project_id "Sustainable Schools"  2020-01-01 - 2021-12-28 {
+project your_project_id "Sustainable Schools"  2020-02-01 - 2021-12-28 {
   # Set the default time zone for the project. If not specified, UTC
   # is used.
   # timezone "UK/London"
@@ -92,11 +92,11 @@ resource Tom "Tom" {
   efficiency 0.5
 }
 
-resource Sally "Sally" {
-  efficiency 1.0
+resource Richard "Richard" {
+  efficiency 0.2
 }
 resource David "David" {
-  efficiency 1.0
+  efficiency 0.2
 }
 
 resource Contract "Contract" {
@@ -111,9 +111,13 @@ task Obtain_figures " Obtain Supply Figures " {start 2020-02-28 duration 20d com
 task Analyse " Analyse " {start 2020-02-01 duration 10d  }
 task submonitor "Sub monitor " {start 2020-02-01 duration 20d  }
 }
-task  Rednock " Rednock " {
-task Obtain_figures " Obtain Supply Figures " {start 2020-02-01 duration 10d complete 100 }
-task Analyse " Analyse " {start 2020-02-01 duration 10d complete 50 }
+task  Rednock "Rednock" {
+task Obtainfigures "Obtain Supply Figures" {start 2020-02-01 duration 10d }
+task Analyse "Analyse" {
+                             depends !Obtainfigures
+                             effort 10d
+                             allocate Richard
+                        }
 task submonitor "Sub monitor " {start 2020-02-01 duration 20d }
 }
 task  Thomas_Keble " Thomas Keble " {
@@ -125,7 +129,7 @@ task submonitor "Sub monitor " {start 2020-02-01 duration 20d  }
 }
 
 task  Education " Education aspects " {
-task  Archway " Archway " {}
+task  Archway " Archway " {length 1w}
 task  Rednock " Rednock " {}
 task  Thomas_Keble " Thomas Keble " {}
 
@@ -142,17 +146,40 @@ task EV_Demo "EV Demo" {
 task  Thomas_Keble " Thomas Keble " {}
 
 }
-task  Rednock " Rednock " {
-task  Tree_planting " Tree Planting " {start 2020-02-01 duration 10d complete 100 }
+
+task  Recycling "Recycling" {
+   task  Archway " Archway " {}
+   task  Rednock " Rednock " {}
+   task  Thomas_Keble " Thomas Keble " {}
+
 }
 
-task  Archway " Archway " {
-task  Tree_planting " Tree Planting " {start 2020-02-01 duration 10d complete 100 }
+task General "General Initiatives" {
+  task  Archway " Archway " {
+
+  }
+
+  task  Rednock " Rednock " {
+    task  Tree_planting " Tree Planting " {start 2020-02-01 duration 10d complete 100 }
+  }
+
+  task  Thomas_Keble " Thomas Keble " {
+
+  }
+}
+task Funding "Funding, Publicity, links" {
+  task  Archway " Archway " {
+
+  }
+
+  task  Rednock " Rednock " {
+  }
+
+  task  Thomas_Keble " Thomas Keble " {
+
+  }
 }
 
-task  Thomas_Keble " Thomas Keble " {
-task  Tree_planting " Tree Planting " {start 2020-02-01 duration 10d complete 100 }
-}
 }
 # Now the project has been specified completely. Stopping here would
 # result in a valid taskJuggler file that could be processed and
@@ -184,7 +211,7 @@ macro taskTip [
 
 textreport frame "" {
   header -8<-
-    == Sustainable Schools Overview ==
+    == Sustainable Schools Project Plan ==
     <[navigator id="navbar"]>
   ->8-
   footer "----"
@@ -207,7 +234,7 @@ textreport frame "" {
   }
 
   textreport wps "Work packages" {
-    textreport Plan "Overview_Plan" {
+    textreport Plan "Complete_Plan" {
       formats html
       center '<[report id="Plan"]>'
     }
@@ -221,8 +248,27 @@ textreport frame "" {
       formats html
       center '<[report id="Education"]>'
     }
-  }
 
+    textreport Transport "Transport Aspects" {
+      formats html
+      center '<[report id="Transport"]>'
+    }
+
+  textreport Recycling "Recycling" {
+    formats html
+    center '<[report id="Recycling"]>'
+   }
+
+   textreport General "General" {
+     formats html
+     center '<[report id="General"]>'
+    }
+
+    textreport Funding "Funding&Publicity" {
+      formats html
+      center '<[report id="Funding"]>'
+     }
+}
 
   textreport "ResourceGraph" {
     formats html
@@ -236,11 +282,14 @@ taskreport overview "" {
   header -8<-
     === Project Overview ===
 
-    The project is structured into 3 work packages.
+    The project is structured into a number of areas of work.
 
     # <-reportlink id='frame.wps.Plan'->
     # <-reportlink id='frame.wps.Energy'->
     # <-reportlink id='frame.wps.Education'->
+    # <-reportlink id='frame.wps.Recycling'->
+    # <-reportlink id='frame.wps.General'->
+    # <-reportlink id='frame.wps.Funding'->
 
 
     === Project Plan ===
@@ -312,9 +361,9 @@ taskreport status "" {
 
 # A list of tasks showing the resources assigned to each task.
 taskreport Plan "" {
-  headline "Work package 1 - Resource Allocation Report"
+  headline "Overview - Resource Allocation Report"
   columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
-          duration, chart { ${taskTip} scale day width 4000 }
+          duration, chart { ${taskTip} scale week width 4000 }
   timeformat "%Y-%m-%d"
   hideresource ~(isleaf() & isleaf_())
   sortresources name.up
@@ -322,9 +371,9 @@ taskreport Plan "" {
 }
 # A list of tasks showing the resources assigned to each task.
 taskreport Energy "" {
-  headline "Work package 2 - Resource Allocation Report"
+  headline "Energy - Resource Allocation Report"
   columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
-          duration, chart { ${taskTip} scale day width 4000 }
+          duration, chart { ${taskTip} scale week width 4000 }
   timeformat "%Y-%m-%d"
   hideresource ~(isleaf() & isleaf_())
   sortresources name.up
@@ -332,13 +381,50 @@ taskreport Energy "" {
 }
 # A list of tasks showing the resources assigned to each task.
 taskreport Education "" {
-  headline "Work package 2 - Resource Allocation Report"
+  headline "Education - Resource Allocation Report"
   columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
-          duration, chart { ${taskTip} scale day width 4000 }
+          duration, chart { ${taskTip} scale week width 4000 }
   timeformat "%Y-%m-%d"
   hideresource ~(isleaf() & isleaf_())
   sortresources name.up
   taskroot Sustainable_Schools.Education
+}
+taskreport Recycling "" {
+  headline "Recycling - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${taskTip} scale week width 4000 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot Sustainable_Schools.Recycling
+}
+taskreport Transport "" {
+  headline "Transport - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${taskTip} scale week width 4000 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot Sustainable_Schools.Transport
+}
+taskreport General "" {
+  headline "General - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${taskTip} scale week width 4000 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot Sustainable_Schools.General
+}
+
+taskreport Funding "" {
+  headline "Funding,publicity,linkages - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${taskTip} scale week width 4000 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot Sustainable_Schools.Funding
 }
 
 # A list of all employees with their contact details.
